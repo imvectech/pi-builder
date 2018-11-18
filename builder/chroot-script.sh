@@ -147,7 +147,8 @@ apt-get  -o Dpkg::Options::=--force-confdef \
   pi-bluetooth \
   lsb-release \
   gettext \
-  cloud-init
+  cloud-init \
+  git
 
 
 # install special Docker enabled kernel
@@ -217,9 +218,8 @@ chmod +x usr/local/bin/rpi-serial-console
 # fix eth0 interface name
 ln -s /dev/null /etc/systemd/network/99-default.link
 
-# cleanup APT cache and lists
-apt-get clean
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# install I2C tools
+apt-get install i2c-tools
 
 # set device label and version number
 echo "HYPRIOT_DEVICE=\"$HYPRIOT_DEVICE\"" >> /etc/os-release
@@ -227,11 +227,13 @@ echo "HYPRIOT_IMAGE_VERSION=\"$HYPRIOT_IMAGE_VERSION\"" >> /etc/os-release
 cp /etc/os-release /boot/os-release
 
 # install Witty pi energy manager software
-echo "Installing i2c-tools"
-apt-get install i2c-tools
-mkdir /home/imvec
-cd /home/imvec
-echo "Installing Witty Pi 2 software"
+cd /home
 wget http://www.uugear.com/repo/WittyPi2/installWittyPi.sh
-sh installWittyPi.sh
+yes | sh installWittyPi.sh
+rm -rf /home/installWittyPi.sh
+
+# cleanup APT cache and lists
+apt-get clean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # apt-get update
